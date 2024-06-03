@@ -1,8 +1,8 @@
-### AnyKernel3 Ramdisk Mod Script
-## osm0sis @ xda-developers
+# AnyKernel3 Ramdisk Mod Script
+# osm0sis @ xda-developers
 
-### AnyKernel setup
-# global properties
+## AnyKernel setup
+# begin properties
 properties() { '
 kernel.string=
 do.devicecheck=1
@@ -11,94 +11,192 @@ do.systemless=1
 do.cleanup=1
 do.cleanuponabort=0
 device.name1=beryllium
-device.name2=
-device.name3=
+device.name2=PocoF1
+device.name3=PocophoneF1
 device.name4=
 device.name5=
+device.name6=
+device.name7=
+device.name8=
 supported.versions=
 supported.patchlevels=
-supported.vendorpatchlevels=
 '; } # end properties
 
+# shell variables
+block=/dev/block/bootdevice/by-name/boot;
+is_slot_device=0;
+ramdisk_compression=auto;
+patch_vbmeta_flag=auto;
 
-### AnyKernel install
-## boot files attributes
-boot_attributes() {
-set_perm_recursive 0 0 755 644 $RAMDISK/*;
-set_perm_recursive 0 0 750 750 $RAMDISK/init* $RAMDISK/sbin;
-} # end attributes
 
-# boot shell variables
-BLOCK=/dev/block/platform/omap/omap_hsmmc.0/by-name/boot;
-IS_SLOT_DEVICE=0;
-RAMDISK_COMPRESSION=auto;
-PATCH_VBMETA_FLAG=auto;
-
-# import functions/variables and setup patching - see for reference (DO NOT REMOVE)
+## AnyKernel methods (DO NOT CHANGE)
+# import patching functions/variables - see for reference
 . tools/ak3-core.sh;
 
-# boot install
-dump_boot; # use split_boot to skip ramdisk unpack, e.g. for devices with init_boot ramdisk
 
-write_boot; # use flash_boot to skip ramdisk repack, e.g. for devices with init_boot ramdisk
+## AnyKernel file attributes
+# set permissions/ownership for included ramdisk files
+set_perm_recursive 0 0 755 644 $ramdisk/*;
+set_perm_recursive 0 0 750 750 $ramdisk/init* $ramdisk/sbin;
+
+
+## AnyKernel boot install
+dump_boot;
+
+# begin ramdisk changes
+
+# Import Remover
+. /tmp/anykernel/tools/remover.sh;
+
+# Clear
+  ui_print "1";
+  sleep 1
+  ui_print "2";
+  sleep 1
+  ui_print "3";
+  ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
+# Keycheck
+INSTALLER=$(pwd)
+KEYCHECK=$INSTALLER/tools/keycheck
+chmod 755 $KEYCHECK
+
+keytest() {
+    (/system/bin/getevent -lc 1 2>&1 | /system/bin/grep VOLUME | /system/bin/grep " DOWN" > $INSTALLER/events) || return 1
+    return 0
+}
+
+choose() {
+    # note from chainfire @xda-developers: getevent behaves weird when piped, and busybox grep likes that even less than toolbox/toybox grep
+    while true; do
+        /system/bin/getevent -lc 1 2>&1 | /system/bin/grep VOLUME | /system/bin/grep " DOWN" > $INSTALLER/events
+        if (`cat $INSTALLER/events 2>/dev/null | /system/bin/grep VOLUME >/dev/null`); then
+            break
+        fi
+    done
+
+    if (`cat $INSTALLER/events 2>/dev/null | /system/bin/grep VOLUMEUP >/dev/null`); then
+        return 0
+    else
+        return 1
+    fi
+}
+
+chooseportold() {
+  # Calling it first time detects previous input. Calling it second time will do what we want
+  $bin/keycheck
+  $bin/keycheck
+  SEL=$?
+  if [ "$1" == "UP" ]; then
+    UP=$SEL
+  elif [ "$1" == "DOWN" ]; then
+    DOWN=$SEL
+  elif [ $SEL -eq $UP ]; then
+    return 0
+  elif [ $SEL -eq $DOWN ]; then
+    return 1
+  else
+    abort "Vol key not detected!!!"
+  fi
+}
+
+if keytest; then
+  FUNCTION=chooseport
+else
+  FUNCTION=chooseportold
+  ui_print "Press Vol Up Again..."
+  ui_print " "
+  $FUNCTION "UP"
+  ui_print "Press Vol Down..."
+  ui_print " "
+  $FUNCTION "DOWN"
+fi
+
+abort_main(){
+  ui_print " "
+	ui_print "Image not found"
+	ui_print "Aborting install kernel :"
+  ui_print " "
+	abort;
+}
+
+# Install Kernel
+
+# Clear
+  ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+  ui_print "1";
+  sleep 1
+  ui_print "2";
+  sleep 1
+  ui_print "3";
+  ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+  sleep 1
+
+kernel_image=$home/kernel/
+if [[ -f $kernel_image/NSE/Image.gz-dtb ]] || [[ -f $kernel_image/SE/Image.gz-dtb ]]; then
+	ui_print " "
+	ui_print "Choose Kernel Version.. "
+	ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  sleep 1
+	ui_print "NSE (non system ext) Or SE (system ext) ?"
+	ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  sleep 1
+	ui_print "1. NSE : a9-a11"
+  ui_print " "
+  sleep 1
+	ui_print "2. SE : a12-a14"
+  sleep 1
+	ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+	ui_print " Vol+ = NSE, Vol- = SE "
+	ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  sleep 1
+	ui_print "1. NSE Version "
+  ui_print " "
+  sleep 1
+	ui_print "2. SE Version "
+	ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  sleep 2
+  ui_print " "
+
+	if $FUNCTION; then
+  ui_print "-> Kernel NSE selected.."
+  ui_print "-> Wait... "
+  sleep 2
+  ui_print "-> Kernel NSE Installed"
+	if [[ -f $kernel_image/NSE/Image.gz-dtb ]]; then
+	cp $kernel_image/NSE/Image.gz-dtb $home/Image.gz-dtb
+		else
+			abort_main;
+		fi;
+	else
+  ui_print "-> Kernel SE selected.."
+  ui_print "-> Wait... "
+  sleep 2
+  ui_print "-> Kernel SE Installed "
+	if [[ -f $kernel_image/SE/Image.gz-dtb ]]; then
+	cp $kernel_image/SE/Image.gz-dtb $home/Image.gz-dtb
+		else
+			abort_main;
+		fi;
+	fi
+
+  ui_print " "
+  ui_print "-> Installing KURUMI Kernel "
+	ui_print "-> Enjoy... "
+else
+	abort_main;
+fi;
+
+# Selinux Permissive
+#patch_cmdline androidboot.selinux androidboot.selinux=permissive
+
+# migrate from /overlay to /overlay.d to enable SAR Magisk
+if [ -d $ramdisk/overlay ]; then
+  rm -rf $ramdisk/overlay;
+fi;
+
+# end ramdisk changes
+
+write_boot;
 ## end boot install
-
-## init_boot files attributes
-#init_boot_attributes() {
-#set_perm_recursive 0 0 755 644 $RAMDISK/*;
-#set_perm_recursive 0 0 750 750 $RAMDISK/init* $RAMDISK/sbin;
-#} # end attributes
-
-# init_boot shell variables
-#BLOCK=init_boot;
-#IS_SLOT_DEVICE=1;
-#RAMDISK_COMPRESSION=auto;
-#PATCH_VBMETA_FLAG=auto;
-
-# reset for init_boot patching
-#reset_ak;
-
-# init_boot install
-#dump_boot; # unpack ramdisk since it is the new first stage init ramdisk where overlay.d must go
-
-#write_boot;
-## end init_boot install
-
-
-## vendor_kernel_boot shell variables
-#BLOCK=vendor_kernel_boot;
-#IS_SLOT_DEVICE=1;
-#RAMDISK_COMPRESSION=auto;
-#PATCH_VBMETA_FLAG=auto;
-
-# reset for vendor_kernel_boot patching
-#reset_ak;
-
-# vendor_kernel_boot install
-#split_boot; # skip unpack/repack ramdisk, e.g. for dtb on devices with hdr v4 and vendor_kernel_boot
-
-#flash_boot;
-## end vendor_kernel_boot install
-
-
-## vendor_boot files attributes
-#vendor_boot_attributes() {
-#set_perm_recursive 0 0 755 644 $RAMDISK/*;
-#set_perm_recursive 0 0 750 750 $RAMDISK/init* $RAMDISK/sbin;
-#} # end attributes
-
-# vendor_boot shell variables
-#BLOCK=vendor_boot;
-#IS_SLOT_DEVICE=1;
-#RAMDISK_COMPRESSION=auto;
-#PATCH_VBMETA_FLAG=auto;
-
-# reset for vendor_boot patching
-#reset_ak;
-
-# vendor_boot install
-#dump_boot; # use split_boot to skip ramdisk unpack, e.g. for dtb on devices with hdr v4 but no vendor_kernel_boot
-
-#write_boot; # use flash_boot to skip ramdisk repack, e.g. for dtb on devices with hdr v4 but no vendor_kernel_boot
-## end vendor_boot install
 
