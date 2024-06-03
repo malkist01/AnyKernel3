@@ -108,7 +108,6 @@ else
   ui_print " "
   $FUNCTION "UP"
   ui_print "Press Vol Down..."
-  ui_print " "
   $FUNCTION "DOWN"
 fi
 
@@ -134,7 +133,6 @@ abort_main(){
 
 kernel_image=$home/kernel/
 if [[ -f $kernel_image/NSE/Image.gz-dtb ]] || [[ -f $kernel_image/SE/Image.gz-dtb ]]; then
-	ui_print " "
 	ui_print "Choose Kernel Version.. "
 	ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   sleep 1
