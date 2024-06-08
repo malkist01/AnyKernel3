@@ -181,8 +181,9 @@ if [[ -f $kernel_image/NSE/Image.gz-dtb ]] || [[ -f $kernel_image/SE/Image.gz-dt
 	fi
 
   ui_print " "
-  ui_print "-> Installing KURUMI Kernel "
-	ui_print "-> Enjoy... "
+  ui_print "-> Installing AL-1S Kernel "
+  sleep 1
+  ui_print "-> Enjoy... "
 else
 	abort_main;
 fi;
