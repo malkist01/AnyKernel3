@@ -1,16 +1,10 @@
 #!/sbin/sh
-#
 # D8G Remover
 # remove junk from another kernel
 
   ui_print " ";
   ui_print " ";
-  ui_print "Removing Junk from other kernel...";
-  ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  sleep 1 ;
-  ui_print "Loading ... ";
-  ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-  sleep 1 ;
+  ui_print "[!] Removing Junk from other kernel . . .";
 
 if [ -f $ramdisk/overlay.d/init.LawRun.rc ]; then
 	rm -f $ramdisk/overlay.d/init.LawRun.rc;
@@ -319,8 +313,4 @@ remove_line $ramdisk/init.rc "import /init.spectrum.rc";
 remove_line $ramdisk/init.rc "import /init.LawRun-Profiles.rc";
 sleep 2 ;
 
-  ui_print "Removing Junk Finish...";
-  ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-  sleep 1 ;
-  ui_print "Next ...";
-  ui_print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+  ui_print "[+] Done!";
