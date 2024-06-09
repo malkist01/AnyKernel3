@@ -242,22 +242,6 @@ else
    sleep 1
    NEW=false
 fi
-if [ "$NEW" == "true" ]; then
-    ui_print "[!] Rebooting in 3 seconds . . ."
-    sleep 1
-    ui_print "[+] -3s . . ."
-    sleep 1
-    ui_print "[+] -2s . . ."
-    sleep 1
-    ui_print "[+] -1s . . ."
-    sleep 1
-    ui_print " "
-    ui_print "[!] Rebooting now . . ."
-    reboot
-    sleep 5
-    ui_print " "
-    ui_print "[!] Something failed. Reboot manually!"
-fi
 else
 	abort_main;
 fi;
@@ -274,4 +258,20 @@ fi;
 
 write_boot;
 ## end boot install
+
+if [ "$NEW" == "true" ]; then
+    ui_print "[!] Rebooting in 3 seconds . . ."
+    sleep 1
+    ui_print "[+] -3s . . ."
+    sleep 1
+    ui_print "[+] -2s . . ."
+    sleep 1
+    ui_print "[+] -1s . . ."
+    sleep 1
+    ui_print " "
+    ui_print "[!] Rebooting now . . ."
+    reboot
+    sleep 5
+    ui_print " "
+    ui_print "[!] Something failed. Reboot manually!"
 
