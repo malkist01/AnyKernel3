@@ -225,8 +225,8 @@ if [[ -f $kernel_image/NSE/Image.gz-dtb ]] || [[ -f $kernel_image/SE/Image.gz-dt
   sleep 2
   ui_print "[+] Done!"
   ui_print " "
-  sleep 1
-  ui_print "Enjoi With Arisu Kernel!"
+  sleep 2
+  ui_print "[+] Enjoi With Arisu Kernel!"
 else
 	abort_main;
 fi;
