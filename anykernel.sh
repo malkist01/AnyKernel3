@@ -225,23 +225,8 @@ if [[ -f $kernel_image/NSE/Image.gz-dtb ]] || [[ -f $kernel_image/SE/Image.gz-dt
   sleep 2
   ui_print "[+] Done!"
   ui_print " "
-
-# Reboot Mode
-ui_print "[!] Do you want to reboot?"
-sleep 1
-ui_print " "
-ui_print "[-] + Volume + = Yes"
-ui_print "[-] - Volume - = No"
-ui_print " "
-if "$FUNCTION"; then
-   ui_print "[+] Yes, Reboot Now "
-   sleep 2
-   NEW=true
-else
-   ui_print "[+] No, Dont Reboot "
-   sleep 1
-   NEW=false
-fi
+  sleep 1
+  ui_print "Enjoi With Arisu Kernel!"
 else
 	abort_main;
 fi;
@@ -258,20 +243,4 @@ fi;
 
 write_boot;
 ## end boot install
-
-if [ "$NEW" == "true" ]; then
-    ui_print "[!] Rebooting in 3 seconds . . ."
-    sleep 1
-    ui_print "[+] -3s . . ."
-    sleep 1
-    ui_print "[+] -2s . . ."
-    sleep 1
-    ui_print "[+] -1s . . ."
-    sleep 1
-    ui_print " "
-    ui_print "[!] Rebooting now . . ."
-    reboot
-    sleep 5
-    ui_print " "
-    ui_print "[!] Something failed. Reboot manually!"
 
