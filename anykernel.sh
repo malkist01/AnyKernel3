@@ -48,13 +48,31 @@ dump_boot;
 # Import Remover
 . /tmp/anykernel/tools/remover.sh;
 
+# Backup Boot
+backup_boot() {
+    ui_print "[+] Backup performed on internal storage"
+    sleep 2
+    backup_dir="/sdcard/backup_boot.img"
+    rm -rf $backup_dir
+    dd if=/dev/block/bootdevice/by-name/boot of=$backup_dir
+    if [ -f $backup_dir ] ; then
+    ui_print "[+] Done!"
+    sleep 1
+    else
+    ui_print "[!] Backup failed, Skipping . . . !"
+    sleep 1
+    fi
+}
+
 # Clear
-  ui_print "1";
+  ui_print " ";
+  sleep 2
+  ui_print "[+] -3s . . .";
   sleep 1
-  ui_print "2";
+  ui_print "[+] -2s . . .";
   sleep 1
-  ui_print "3";
-  ui_print "x-----------------------------------------------x";
+  ui_print "[+] -1s . . .";
+  ui_print " ";
 
 # Keycheck
 INSTALLER=$(pwd)
@@ -96,7 +114,7 @@ chooseportold() {
   elif [ $SEL -eq $DOWN ]; then
     return 1
   else
-    abort "Vol key not detected!!!"
+    abort "[!] Vol key not detected. Try again!"
   fi
 }
 
@@ -104,75 +122,91 @@ if keytest; then
   FUNCTION=chooseport
 else
   FUNCTION=chooseportold
-  ui_print "Press Vol Up Again..."
   ui_print " "
-  $FUNCTION "UP"
-  ui_print "Press Vol Down..."
-  $FUNCTION "DOWN"
+  ui_print "[!] Vol key programming"
+  sleep 1
+  ui_print "[!] Press the volume key + "
+  "$FUNCTION" "UP"
+  ui_print "[!] Press the volume key - "
+  "$FUNCTION" "DOWN"
+fi
+
+# Vol Key Backup Boot
+ui_print " "
+ui_print "[!] Do you want to backup boot?"
+ui_print "[-] + Volume + = Yes"
+ui_print "[-] - Volume - = No"
+
+if "$FUNCTION"; then
+   ui_print "[+] Yes, performing backup . . ."
+   sleep 2
+   NEW=true
+else
+   ui_print "[+] No, skipping backup . . ."
+   sleep 1
+   NEW=false
+fi
+if [ "$NEW" == "true" ]; then
+    backup_boot
 fi
 
 abort_main(){
-  ui_print " "
-	ui_print "Image not found"
-	ui_print "Aborting install kernel :"
-  ui_print " "
+    ui_print " "
+	ui_print "[!] Image not found"
+	ui_print "[!] Aborting install kernel :"
+    ui_print " "
 	abort;
 }
 
 # Install Kernel
 
 # Clear
-  ui_print "x-----------------------------------------------x";
-  ui_print "1";
+  ui_print " ";
+  ui_print "[+] -3s...";
   sleep 1
-  ui_print "2";
+  ui_print "[+] -2s...";
   sleep 1
-  ui_print "3";
-  ui_print "x-----------------------------------------------x";
+  ui_print "[+] -1s...";
+  ui_print " ";
   sleep 1
 
 kernel_image=$home/kernel/
 if [[ -f $kernel_image/NSE/Image.gz-dtb ]] || [[ -f $kernel_image/SE/Image.gz-dtb ]]; then
-	ui_print "Choose Kernel Version.. "
-	ui_print "x-----------------------------------------------x"
+	ui_print "[!] Which kernel variant do you want?"
+	ui_print " "
   sleep 1
-	ui_print "NSE ( No System Ext )"
+	ui_print "[!] NSE ( No System Ext )"
   sleep 1
-        ui_print "SE ( System Ext ) "
-	ui_print "x-----------------------------------------------x"
+        ui_print "[!] SE ( System Ext ) "
+	ui_print " "
   sleep 1
-	ui_print "1. NSE : a9-a11"
-  ui_print " "
+	ui_print "[+] NSE : A9 - A11"
   sleep 1
-	ui_print "2. SE : a12-a14"
+	ui_print "[+] SE : A12 - A14"
   sleep 1
-	ui_print "x-----------------------------------------------x"
-	ui_print " Vol+ = NSE, Vol- = SE "
-	ui_print "x-----------------------------------------------x"
-  sleep 1
-	ui_print "1. NSE Version "
-  ui_print " "
-  sleep 1
-	ui_print "2. SE Version "
-	ui_print "x-----------------------------------------------x"
-  sleep 2
-  ui_print " "
+	ui_print " "
+	ui_print "[-] + Volume + = NSE"
+    ui_print "[-] - Volume - = SE"
+	ui_print " "
+	ui_print " "
 
 	if $FUNCTION; then
-  ui_print "-> Kernel NSE selected.."
-  ui_print "-> Wait... "
+  ui_print "[+] Kernel NSE selected . . ."
+  sleep 1
+  ui_print "[+] Wait . . . "
   sleep 2
-  ui_print "-> Kernel NSE Installed"
+  ui_print "[-] Kernel NSE Installed"
 	if [[ -f $kernel_image/NSE/Image.gz-dtb ]]; then
 	cp $kernel_image/NSE/Image.gz-dtb $home/Image.gz-dtb
 		else
 			abort_main;
 		fi;
 	else
-  ui_print "-> Kernel SE selected.."
-  ui_print "-> Wait... "
+  ui_print "[+] Kernel SE selected . . ."
+  sleep 1
+  ui_print "[+] Wait . . . "
   sleep 2
-  ui_print "-> Kernel SE Installed "
+  ui_print "[-] Kernel SE Installed "
 	if [[ -f $kernel_image/SE/Image.gz-dtb ]]; then
 	cp $kernel_image/SE/Image.gz-dtb $home/Image.gz-dtb
 		else
@@ -181,9 +215,49 @@ if [[ -f $kernel_image/NSE/Image.gz-dtb ]] || [[ -f $kernel_image/SE/Image.gz-dt
 	fi
 
   ui_print " "
-  ui_print "-> Installing AL-1S Kernel "
+  ui_print "[+] Installing AL-1S Kernel System . . . "
+  sleep 2
+  ui_print "[+] Done!"
   sleep 1
-  ui_print "-> Enjoy... "
+  ui_print " "
+  ui_print "[!] Wiping dalvik & cache"
+  rm -rf /data/dalvik-cache/*
+  sleep 2
+  ui_print "[+] Done!"
+  ui_print " "
+
+# Reboot Mode
+ui_print "[!] Do you want to reboot?"
+sleep 1
+ui_print " "
+ui_print "[-] + Volume + = Yes"
+ui_print "[-] - Volume - = No"
+ui_print " "
+if "$FUNCTION"; then
+   ui_print "[+] Yes, Reboot Now "
+   sleep 2
+   NEW=true
+else
+   ui_print "[+] No, Dont Reboot "
+   sleep 1
+   NEW=false
+fi
+if [ "$NEW" == "true" ]; then
+    ui_print "[!] Rebooting in 3 seconds . . ."
+    sleep 1
+    ui_print "[+] -3s . . ."
+    sleep 1
+    ui_print "[+] -2s . . ."
+    sleep 1
+    ui_print "[+] -1s . . ."
+    sleep 1
+    ui_print " "
+    ui_print "[!] Rebooting now . . ."
+    reboot
+    sleep 5
+    ui_print " "
+    ui_print "[!] Something failed. Reboot manually!"
+fi
 else
 	abort_main;
 fi;
