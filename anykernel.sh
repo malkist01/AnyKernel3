@@ -142,7 +142,7 @@ if "$FUNCTION"; then
    sleep 2
    NEW=true
 else
-   ui_print "[+] No, skipping backup . . ."
+   ui_print "[+] No, Skipping backup . . ."
    sleep 1
    NEW=false
 fi
@@ -153,7 +153,7 @@ fi
 abort_main(){
     ui_print " "
 	ui_print "[!] Image not found"
-	ui_print "[!] Aborting install kernel :"
+	ui_print "[!] Aborting install lernel :"
     ui_print " "
 	abort;
 }
@@ -195,7 +195,7 @@ if [[ -f $kernel_image/NSE/Image.gz-dtb ]] || [[ -f $kernel_image/SE/Image.gz-dt
   sleep 1
   ui_print "[+] Wait . . . "
   sleep 2
-  ui_print "[-] Kernel NSE Installed"
+  ui_print "[-] Prepare Arisuu NSE . . ."
 	if [[ -f $kernel_image/NSE/Image.gz-dtb ]]; then
 	cp $kernel_image/NSE/Image.gz-dtb $home/Image.gz-dtb
 		else
@@ -206,7 +206,7 @@ if [[ -f $kernel_image/NSE/Image.gz-dtb ]] || [[ -f $kernel_image/SE/Image.gz-dt
   sleep 1
   ui_print "[+] Wait . . . "
   sleep 2
-  ui_print "[-] Kernel SE Installed "
+  ui_print "[-] Prepare Arisuu SE . . ."
 	if [[ -f $kernel_image/SE/Image.gz-dtb ]]; then
 	cp $kernel_image/SE/Image.gz-dtb $home/Image.gz-dtb
 		else
@@ -215,7 +215,7 @@ if [[ -f $kernel_image/NSE/Image.gz-dtb ]] || [[ -f $kernel_image/SE/Image.gz-dt
 	fi
 
   ui_print " "
-  ui_print "[+] Installing AL-1S Kernel System . . . "
+  ui_print "[+] Installing Arisuu Kernel System . . . "
   sleep 2
   ui_print "[+] Done!"
   sleep 1
@@ -226,7 +226,7 @@ if [[ -f $kernel_image/NSE/Image.gz-dtb ]] || [[ -f $kernel_image/SE/Image.gz-dt
   ui_print "[+] Done!"
   ui_print " "
   sleep 2
-  ui_print "[+] Enjoi With Arisu Kernel!"
+  ui_print "[+] Enjoi With Arisu Kernel !"
 else
 	abort_main;
 fi;
