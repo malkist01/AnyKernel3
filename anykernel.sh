@@ -178,6 +178,8 @@ if [[ -f $kernel_image/NSE/Image.gz-dtb ]] || [[ -f $kernel_image/SE/Image.gz-dt
 	ui_print "[!] NSE ( No System Ext )"
   sleep 1
         ui_print "[!] SE ( System Ext ) "
+  sleep 1
+        ui_print "[!] MIUI / HyperOS Always NSE " 
 	ui_print " "
   sleep 1
 	ui_print "[+] NSE : A9 - A11"
